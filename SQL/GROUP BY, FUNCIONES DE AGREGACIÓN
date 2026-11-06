@@ -1,0 +1,59 @@
+USE world;
+
+#1) Muestra la cantidad de ciudades que hay en la mesa city.
+SELECT COUNT(Name) AS cantidad_ciudades
+FROM city;
+
+#2) Muestra la cantidad de ciudades que tiene cada "countryCode" de la tabla city.
+SELECT CountryCode, COUNT(Name) AS cantidad_ciudades
+FROM city
+GROUP BY CountryCode
+ORDER BY cantidad_ciudades DESC;
+
+#3) Muestra la "population" máxima de cada "countryCode" de la tabla city.
+SELECT CountryCode, MAX(Population) AS poblacion_max
+FROM city
+GROUP BY CountryCode
+ORDER BY poblacion_max DESC;
+
+#4) Muestra la "lifeExpentacy" media de cada continente y región de la mesa country.
+SELECT Continent, Region, AVG(LifeExpectancy) AS media_lifeExpentacy
+FROM country
+GROUP BY Continent, Region;
+
+#5) Muestra la "population" total de cada continente.
+SELECT Continent, SUM(Population) AS total_population
+FROM country
+GROUP BY Continent
+ORDER BY total_population DESC;
+
+#6) Muestra la "surfaceArea" más pequeña de cada región de cada continente.
+SELECT continent, region, MIN(SurfaceArea) AS area_min
+FROM country
+GROUP BY continent, region
+ORDER BY area_min DESC;
+
+#7) Muestra cuántos países tiene cada continente.
+SELECT continent, COUNT(Name) AS cantidad_paises
+FROM country
+GROUP BY continent
+ORDER BY cantidad_paises DESC;
+
+#8) Muestra los continentes que tienen más de 50 países.
+SELECT continent, COUNT(Name) AS cantidad_paises
+FROM country
+GROUP BY continent
+HAVING cantidad_paises > 50
+ORDER BY cantidad_paises DESC;
+
+SELECT *
+FROM countrylanguage;
+
+#9) Muestra la cantidad de países por "language" y por "IsOfficial". Es decir, cuántos países hablan una lengua en función de si es o no oficial.
+SELECT language, isofficial, COUNT(countrycode) AS cantidad_paises
+FROM countrylanguage
+GROUP BY language, isofficial;
+
+
+
+
