@@ -1,0 +1,15 @@
+USE academia_sql_mercat_2026;
+
+#1) Haz una "union" de las dos tablas.
+SELECT ï»¿NOM, VEGADES
+FROM bbdd_union_nenes
+UNION
+SELECT ï»¿NOM, VEGADES
+FROM bbdd_union_nens;
+
+#2) Haz una "union all" de las mismas tablas
+SELECT ï»¿NOM, VEGADES
+FROM bbdd_union_nenes
+UNION ALL
+SELECT ï»¿NOM, VEGADES
+FROM bbdd_union_nens;
