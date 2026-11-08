@@ -1,0 +1,80 @@
+USE tienda_online;
+
+#1) Muestra el nombre del producto y el nombre de la categoría de los productos que tienen un precio inferior a 15 euros.
+SELECT p.nombre_producto, c.nombre_categoria, p.precio
+FROM productos p 
+INNER JOIN categorias c 
+	ON c.id_categoria = p.id_categoria
+WHERE p.precio < 15
+ORDER BY p.precio DESC;
+
+#Sobre la pregunta anterior, ¿cuál es la categoría con más productos menores de 15 euros?
+SELECT nombre_categoria, COUNT(c.nombre_categoria)
+FROM productos p 
+INNER JOIN categorias c 
+	ON c.id_categoria = p.id_categoria
+WHERE p.precio < 15
+GROUP BY c.nombre_categoria
+LIMIT 1;
+
+#3) Muestra la cantidad de productos diferentes que existen por pedidos, de los pedidos de 2023 que tienen 8 productos o más.
+SELECT p.id_pedido, COUNT(DISTINCT dp.id_producto) AS cantidad_productos
+FROM pedidos p 
+INNER JOIN detallespedidos dp
+	ON dp.id_pedido = p.id_pedido
+WHERE p.anio_pedido = 2023
+GROUP BY p.id_pedido
+HAVING cantidad_productos > 8;
+
+#4) A veces falla el sistema que guarda el detalle de los pedidos, así que muestra la cantidad de pedidos que no tienen detalle.
+SELECT COUNT(*) AS pedidos_sin_detalles
+FROM pedidos p 
+LEFT JOIN detallespedidos dp
+	ON dp.id_pedido = p.id_pedido
+WHERE dp.id_detalle IS NULL;
+
+#5) Muestra el nombre de los 3 usuarios que ha hecho más pedidos.
+SELECT u.nombre, COUNT(p.id_pedido) AS cantidad_pedidos
+FROM usuarios u 
+INNER JOIN pedidos p
+	ON u.id_usuario = p.id_usuario
+GROUP BY u.nombre
+ORDER BY cantidad_pedidos DESC
+LIMIT 3;
+
+#6) Muestra el nombre y el id de los usuarios que son de Lima, Perú y que han realizado algún pedido que ha tenido un pago cancelado.
+SELECT u.id_usuario, u.nombre, p.estado_pago
+FROM usuarios u 
+INNER JOIN pedidos pe
+	ON u.id_usuario = pe.id_usuario
+		INNER JOIN pagos p 
+			ON pe.id_pedido = p.id_pedido
+WHERE u.ciudad = "Lima" AND u.pais ="Peru" AND p.estado_pago = "Cancelado";
+
+#7) Muestra el usuario que tiene una media de gasto por pedido más alta (sólo deben tenerse en cuenta los pedidos finalizados y no deben tenerse en cuenta los pagos cancelados)
+SELECT u.nombre, AVG(p.importe) AS media_gasto
+FROM usuarios u 
+INNER JOIN pedidos pe
+	ON u.id_usuario = pe.id_usuario
+		INNER JOIN pagos p 
+			ON pe.id_pedido = p.id_pedido
+WHERE pe.estado_pedido = "Finalizado" AND p.estado_pago != "Cancelado"
+GROUP BY u.nombre
+ORDER BY media_gasto DESC
+LIMIT 1;
+
+#8) ¿Cuál es la categoría de productos que más compran las mujeres?
+SELECT c.nombre_categoria, COUNT(p.id_pedido) AS cantidad_pedidos
+FROM categorias c 
+INNER JOIN productos pr
+    ON c.id_categoria = pr.id_categoria
+INNER JOIN detallespedidos dp
+	ON pr.id_producto = dp.id_producto
+INNER JOIN pedidos p 
+	ON dp.id_pedido = p.id_pedido
+INNER JOIN usuarios u 
+	ON p.id_usuario = u.id_usuario
+WHERE u.sexo = "F"
+GROUP BY c.nombre_categoria
+ORDER BY cantidad_pedidos DESC
+LIMIT 1;
